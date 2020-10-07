@@ -1,0 +1,4 @@
+app/node_modules/
+app/build/
+node/node_modules/
+node/dist/
