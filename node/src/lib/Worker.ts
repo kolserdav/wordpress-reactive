@@ -15,6 +15,7 @@ class Worker {
     await page.setViewport({width: 1633, height: 766});
     await page.goto(url);
     const res =  await page.evaluate(() => {
+      //@ts-ignore
       return window.document.querySelector('html').outerHTML;
     })
     await browser.close();

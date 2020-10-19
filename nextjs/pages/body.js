@@ -1,7 +1,5 @@
-// Всё работает, но кто же мог подумать, что водпресс не все ссылки формирует на сервере))))
 
 import React, { useEffect } from 'react';
-import './App.css';
 import * as parser from 'html2json';
 import * as rParser from 'html-react-parser';
 import { Helmet } from "react-helmet";
@@ -10,8 +8,11 @@ import {
 	Route,
 	Switch,
   Link,
-  useHistory
+  useHistory,
+  StaticRouter
 } from 'react-router-dom';
+import { createMemoryHistory } from 'history';
+const isServer = typeof window === 'undefined';
 
 
 function getHelmetElement(val, key) {
@@ -74,6 +75,7 @@ function changeLinks(body) {
     }
   }
   if (!body.props) return newBody;
+  const regServer = /^https?:\/\/wref.loc/;
   for (let p in body.props.children) {
     if (Array.isArray(body.props.children)) {
       if (!body.props.children[p]) continue;
@@ -89,8 +91,15 @@ function changeLinks(body) {
             });
           }
         }
+        const href = body.props.children[p].props.href;
+        const newProps = [];
+        for (let prop in eProps) {
+          if (prop !== 'href') {
+            newProps.push(eProps[prop])
+          }
+        }
         newBody.props.children[p] = (
-          <Link to="/test" props></ Link>
+        <Link to={href.replace(regServer, '')} {...newProps}>{body.props.children[p].props.children}</ Link>
         );
       }
       else {
@@ -104,13 +113,12 @@ function changeLinks(body) {
       if (p === 'type' && body.props.children[p] === 'a') {
         const href = body.props.children.props.href;
         let to = '';
-        const regServer = /^https?:\/\/wref.loc/
         if (href.match(regServer)) {
           to = href.replace(regServer, '');
           newBody.props.children = (
             <Link to={to} props>{body.props.children.props.children}</ Link>
           );
-          arrRoutes.push(<Route path={to}><Home /></Route>)
+          arrRoutes.push(<Route path={to}><Body /></Route>)
         }
       }
     }
@@ -118,12 +126,12 @@ function changeLinks(body) {
   return newBody;
 }
 
-function Home(props) {
+export default function Body(props) {
   
   const history = useHistory();
-  const [d, setD] = React.useState('');
+  
+  const [d, setD] = React.useState('Загрузка');
   const [ head, setHead ] = React.useState();
-
   useEffect(() => { 
     fetch(`http://localhost:3030/?path=${window.location.pathname}`)
       .then(r => r.json())
@@ -146,24 +154,3 @@ function Home(props) {
     { head } <div>{d}</div>
     </div>)
 }
-
-function App() {
-  
-  const [d, setD] = React.useState('');
-  const [ head, setHead ] = React.useState();
-  
-  useEffect(() => {
-    
-  }, [])
-	return (
-		<BrowserRouter>
-         
-        <Switch>
-          <Home />
-        </ Switch>
-
-		</ BrowserRouter>
-  );
-}
-
-export default App;

@@ -1,0 +1,21 @@
+{
+  "name": "learn-starter",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "deploy": "node ssr-server.js"
+  },
+  "dependencies": {
+    "express": "^4.17.1",
+    "html-react-parser": "^0.14.0",
+    "html2json": "^1.0.2",
+    "next": "9.5.3",
+    "react": "16.13.1",
+    "react-dom": "16.13.1",
+    "react-helmet": "^6.1.0",
+    "react-router-dom": "^5.2.0"
+  }
+}
